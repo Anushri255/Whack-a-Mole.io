@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Whack-a-Mole</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        #score, #missed {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .hole {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mole {
+            width: 80px;
+            height: 80px;
+            background-color: brown;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Whack-a-Mole Game</h1>
+    <div id="score">Score: 0</div>
+    <div id="missed">Missed: 0</div> 
+    <div class="grid">
+        <div class="hole" id="hole1"></div>
+        <div class="hole" id="hole2"></div>
+        <div class="hole" id="hole3"></div>
+        <div class="hole" id="hole4"></div>
+        <div class="hole" id="hole5"></div>
+        <div class="hole" id="hole6"></div>
+        <div class="hole" id="hole7"></div>
+        <div class="hole" id="hole8"></div>
+        <div class="hole" id="hole9"></div>
+    </div>
+    <button id="startButton">Start Game</button>
+    <script>
+        // script.js
+        const holes = document.querySelectorAll('.hole');
+        const scoreDisplay = document.getElementById('score');
+        const missedDisplay = document.getElementById('missed');
+        const startButton = document.getElementById('startButton');
+        let score = 0;
+        let missed = 0;
+        let activeMole;
+        let timer;
+
+        function randomHole() {
+            const index = Math.floor(Math.random() * holes.length);
+            return holes[index];
+        }
+
+        function showMole() {
+            const hole = randomHole();
+            hole.classList.add('mole');
+            activeMole = hole;
+
+            setTimeout(() => {
+                if (activeMole === hole) {
+                    missed++;
+                    missedDisplay.textContent = `Missed: ${missed}`;
+                }
+                hole.classList.remove('mole');
+                if (timer) {
+                    showMole();
+                }
+            }, 800); // Mole stays up for 800ms
+        }
+
+        function whackMole(event) {
+            if (event.target === activeMole) {
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                activeMole.classList.remove('mole');
+                activeMole = null;
+            }
+        }
+
+        function startGame() {
+            score = 0;
+            missed = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+            missedDisplay.textContent = `Missed: ${missed}`;
+            timer = setTimeout(() => {
+                clearTimeout(timer);
+                alert(`Game Over! Your final score is ${score}. Missed attempts: ${missed}`);
+            }, 15000); 
+
+            showMole();
+        }
+
+        function stopGame() {
+            clearTimeout(timer);
+            holes.forEach(hole => hole.classList.remove('mole'));
+        }
+
+        holes.forEach(hole => hole.addEventListener('click', whackMole));
+        startButton.addEventListener('click', () => {
+            stopGame();
+            startGame();
+        });
+    </script>
+</body>
+</html>
